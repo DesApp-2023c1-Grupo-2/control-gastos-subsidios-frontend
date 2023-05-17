@@ -10,6 +10,8 @@ import {
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { getProyectsForAdmin } from '../../services/proyectos';
+//Julian 16/5
+import { listaProyectosAdmin } from '../../constants/constants';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -40,16 +42,16 @@ const StyledTableHead = withStyles(() => ({
 const ProyectsList = () => {
   const $ = useStyles();
 
-  const [proyects,setProyects] = useState([]);
+  const [proyects, setProyects] = useState([]);
 
-  useEffect( () => {
-    async function getProyects(){
-        const proyectos = await getProyectsForAdmin();
+  useEffect(() => {
+    async function getProyects() {
+      const proyectos = await getProyectsForAdmin();
 
-        setProyects(proyectos);
+      setProyects(proyectos);
     }
     getProyects();
-  },[]) //only de first render
+  }, []); //only de first render
 
   return (
     <>
@@ -59,23 +61,47 @@ const ProyectsList = () => {
           <StyledTableHead>
             <StyledTableCell className={$.textColor}>Proyecto</StyledTableCell>
             <StyledTableCell align="center" className={$.textColor}>
+              Convocatoria
+            </StyledTableCell>
+            <StyledTableCell align="center" className={$.textColor}>
               Director
+            </StyledTableCell>
+            <StyledTableCell align="center" className={$.textColor}>
+              Presupuesto Total
+            </StyledTableCell>
+            <StyledTableCell align="center" className={$.textColor}>
+              Gastado
+            </StyledTableCell>
+            <StyledTableCell align="center" className={$.textColor}>
+              Remanente
             </StyledTableCell>
             <StyledTableCell align="center" className={$.textColor}>
               Fecha de Inicio
             </StyledTableCell>
           </StyledTableHead>
           <TableBody>
-            {proyects.map((proyecto) => (
-              <StyledTableRow key={proyecto.id}>
-                <StyledTableCell scope="row" to={'/proyectos'}>
-                  {proyecto.titulo}
+            {listaProyectosAdmin.map((listaProyectosAdmin) => (
+              <StyledTableRow key={listaProyectosAdmin.titulo}>
+                <StyledTableCell scope="row" className={$.tableCellContent}>
+                  {listaProyectosAdmin.titulo}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {proyecto.director}
+                  {listaProyectosAdmin.convocatoria}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {proyecto.fechaInicio}
+                  {listaProyectosAdmin.director}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {listaProyectosAdmin.presupuestoTotal}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {listaProyectosAdmin.presupuestoGastado}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {listaProyectosAdmin.presupuestoRemanente}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {listaProyectosAdmin.fechaInicio}
                 </StyledTableCell>
               </StyledTableRow>
             ))}

@@ -204,3 +204,43 @@ export const rubros = [
   'tecnico',
   'administracion',
 ];
+
+//Julian 16/5
+export const listaProyectosAdmin = [
+  {
+    convocatoria: 'convocatoria 1',
+    presupuestoTotal: '1000',
+    presupuestoGastado: '700',
+    presupuestoRemanente: '300',
+    titulo: 'Proyecto 1',
+    fechaInicio: '24/01/2020',
+    director: 'Don Perico',
+  },
+  {
+    convocatoria: 'convocatoria 2',
+    presupuestoTotal: '2000',
+    presupuestoGastado: '1500',
+    presupuestoRemanente: '500',
+    titulo: 'Proyecto 2',
+    fechaInicio: '24/01/2021',
+    director: 'Don Pachonc',
+  },
+  {
+    convocatoria: 'convocatoria 3',
+    presupuestoTotal: '1300',
+    presupuestoGastado: '500',
+    presupuestoRemanente: '800',
+    titulo: 'Proyecto 3',
+    fechaInicio: '24/01/2022',
+    director: 'San Peters',
+  },
+  {
+    convocatoria: 'convocatoria 4',
+    presupuestoTotal: '2500',
+    presupuestoGastado: '2400',
+    presupuestoRemanente: '100',
+    titulo: 'Proyecto 4',
+    fechaInicio: '24/01/2023',
+    director: 'Pablo Lescano',
+  },
+];
