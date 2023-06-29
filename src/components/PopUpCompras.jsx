@@ -57,6 +57,22 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'right',
     marginTop: '6.5rem',
   },
+  botonCancelar: {
+    marginRight: '1rem',
+    color: "black",
+    backgroundColor: "#dddddd",
+    '&:hover': {
+      backgroundColor: '#fd1c1cbf',
+    },
+  },
+  botonFinalizarCompra:{
+    // cambiar colores y hover  
+    // color: "black",
+    // backgroundColor: "#dddddd",
+    // '&:hover': {
+    //   backgroundColor: '#fd1c1cbf',
+    // },
+  },
   // secondRow: {
   //   display: 'grid',
   //   width: '30%',
@@ -84,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
   multiLineInput: {
     backgroundColor: '#EAEDED',
     borderRadius: '5px',
-    width: '90%',
+    width: '100%',
   },
   proveedor: {
     marginTop: '1.5rem',
@@ -127,7 +143,7 @@ const useStyles = makeStyles((theme) => ({
   proveedorForm: {
     display: 'flex',
     flexDirection: 'column',
-    width: '15rem',
+    width: '19rem',
     marginTop: '2rem',
   },
   buttonNewProveedor: {
@@ -532,16 +548,16 @@ export default function PopUpCompras({
             />
             */}
 
-            <Button onClick={sendDataNewProveedor} disabled={!canAddProveedor}>
+            <Button className={$.subrubro} onClick={sendDataNewProveedor} disabled={!canAddProveedor}>
               Agregar proveedor
             </Button>
           </div>
         )}
         <div className={$.button}>
-          <Button color="primary" className={$.botones} onClick={handleClose}>
+          <Button color="primary" className={$.botonCancelar} onClick={handleClose}>
             Cancelar
           </Button>
-          <Button color="primary" disabled={!canSubmit} onClick={submitForm}>
+          <Button color="primary" disabled={!canSubmit} className={$.botonFinalizarCompra} onClick={submitForm}>
             Finalizar Pedido de Compra
           </Button>
         </div>
