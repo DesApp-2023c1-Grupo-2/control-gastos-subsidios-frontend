@@ -8,7 +8,7 @@ export const proyectosEnCurso = [
     // año: 2020,
     // unidadAcademica: 'Instituto de Tecnología e Ingeniería',
     // areaTematica: 'Seguridad informática',
-    // subsidio: 585000,
+    subsidio: 585000,
     fechaInicio: '18/09/2020',
     // fechaFin: '18/09/2022',
     // fechaInicioGastos: '18/12/2020',
@@ -203,5 +203,6 @@ export const rubros = [
   'viaticos',
   'equipamiento',
   'tecnico',
+  'Loca',
   'administracion',
 ];

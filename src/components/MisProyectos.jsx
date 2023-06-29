@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { React, useEffect, useState ,Fragment} from 'react';
+import { React, useEffect, useState } from 'react';
 import { Footer } from './Footer';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,17 +16,9 @@ import {
 } from '../utils/presupuestos';
 import { getPresupuesto } from '../services/presupuestos';
 import { getAllCompras } from '../services/compras';
-import { Box, CircularProgress, Typography } from '@material-ui/core';
-//import { Box, CircularProgress } from '@material-ui/core';
+import { Box, CircularProgress, Collapse, TableHead, Typography } from '@material-ui/core';
 import { getProyecto } from '../services/proyectos';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-//import Typography from '@material-ui/core/Typography';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import TableHead from '@material-ui/core/TableHead';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
-//importo otroa typography por las dudas comento
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.common.black,
@@ -85,7 +77,7 @@ const circularProgressWithValue = (nivelEjecucion) => {
 
 export const MisProyectos = ({ userName, setIdProyecto }) => {
   const $ = useStyles();
-  //const [proyectosEnCurso, setProyectosEnCurso] = useState([]);
+  // const [proyectosEnCurso, setProyectosEnCurso] = useState([]);
   const [compras, setCompras] = useState([]);
   const [presupuesto, setPresupuesto] = useState([]);
   const [open, setOpen] = useState(false);
@@ -100,19 +92,17 @@ export const MisProyectos = ({ userName, setIdProyecto }) => {
       const comprasRealizadas = await getAllCompras();
       const presupuestoProyecto = await getPresupuesto();
       setCompras(comprasRealizadas);
-      //setProyectosEnCurso(proyectos);
+      // setProyectosEnCurso(proyectos);
       setPresupuesto(presupuestoProyecto);
     }
     getPorcentaje();
   }, []);
 
-  const AbririAcoordeon = (id) =>  {
+
+  const AbrirAcoordeon = (id) => {
     handleSelectProyect(id)
     setOpen(!open)
-}
-
-
-
+  }
   const calcularNivelEjecucion = (proyectoId) => {
     const comprasRealizadasEnproyecto = compras.filter(
       (compra) => compra.idProyecto == proyectoId
@@ -124,62 +114,8 @@ export const MisProyectos = ({ userName, setIdProyecto }) => {
   };
   return (
     <>
-      <h1 className={$.background}>Proyectos en curso</h1>
-{/* 
-
-    <>
-      <TableRow >
-        <TableCell>
-            <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton> 
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {proyectosEnCurso.nombre}
-        </TableCell>
-        <TableCell align="right">{proyectosEnCurso.director}</TableCell>
-        <TableCell align="right">{row.fat}</TableCell>
-        <TableCell align="right">{row.carbs}</TableCell>
-        <TableCell align="right">{row.protein}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {proyectosEnCurso.map((proyecto) => (
-                    <TableRow key={proyecto.date}>
-                      <TableCell component="th" scope="row">
-                        {proyecto.date}
-                      </TableCell>
-                      <TableCell>{proyecto.customerId}</TableCell>
-                      <TableCell align="right">{proyecto.amount}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </>
-   */}
-  
-
-
-      <TableContainer className={$.container} component={Paper}  >
+      <h2>Proyectos en curso</h2>
+      <TableContainer className={$.container} component={Paper}>
         <Table aria-label="customized table">
           <StyledTableHead>
             <StyledTableCell className={$.textColor}>Proyecto</StyledTableCell>
@@ -193,51 +129,20 @@ export const MisProyectos = ({ userName, setIdProyecto }) => {
               Porcentaje
             </StyledTableCell>
           </StyledTableHead>
-          <TableBody>
+          
+          <TableBody >
             {proyectosEnCurso.map((proyecto) => (
-              <StyledTableRow key={proyecto.id}>
-                <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}></IconButton>
-                <StyledTableCell
+              
+        
+        
+             <StyledTableRow key={proyecto.id} >
+               <StyledTableCell
                   scope="row"
-                  onClick={() => AbririAcoordeon(proyecto.id)}
+                  onClick={() => AbrirAcoordeon(proyecto.id)}
                   component={Link}
-                  
+                  // to={'/proyectos'}
                 >
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  
-                  {/* {proyectosEnCurso.history.map((proyecto) => (
-                    <TableRow key={proyecto.date}>
-                      <TableCell component="th" scope="row">
-                        {proyecto.date}
-                      </TableCell>
-                      <TableCell>{proyecto.customerId}</TableCell>
-                      <TableCell align="right">{proyecto.amount}</TableCell>
-                      <TableCell align="right">
-                         {Math.round(proyecto.amount * row.price * 100) / 100}
-                      </TableCell>
-                    </TableRow>
-                  ))} */}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-                  {proyecto.titulo}
+                  {proyecto.nombre}
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   {proyecto.director}
@@ -247,17 +152,21 @@ export const MisProyectos = ({ userName, setIdProyecto }) => {
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   {circularProgressWithValue(
-                    calcularNivelEjecucion(proyecto.id)
+                    // calcularNivelEjecucion(proyecto.id)
+                    proyecto.porcentaje
                   )}
                 </StyledTableCell>
               </StyledTableRow>
+               
+                
+            
             ))}
+
           </TableBody>
+
+          
         </Table>
-      </TableContainer> 
-
-
-
+      </TableContainer>
       <br></br>
       <h2>Historia</h2>
       <TableContainer className={$.container} component={Paper}>
@@ -293,6 +202,7 @@ export const MisProyectos = ({ userName, setIdProyecto }) => {
                 </StyledTableCell>
               </StyledTableRow>
             ))}
+            
           </TableBody>
         </Table>
       </TableContainer>
@@ -316,7 +226,8 @@ const useStyles = makeStyles({
   tableCellContent: {
     maxWidth: '10vw',
   },
-  background: {
-    backgroundColor: 'azure',
+  columnflex:  {
+    display: "flex",
+    flexDirection: "column"
   },
 });

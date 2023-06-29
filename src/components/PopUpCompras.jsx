@@ -57,14 +57,26 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'right',
     marginTop: '6.5rem',
   },
+  // secondRow: {
+  //   display: 'grid',
+  //   width: '30%',
+  // },
+  // cargarFactura: {
+  //   display: 'flex',
+  //   marginTop: '1rem',
+  // },
+  //modificacion 
   secondRow: {
-    display: 'grid',
-    width: '30%',
+    display: 'flex',
+    width: '100%',
+    marginTop: "3rem",
+    marginBottom: "3rem",
   },
   cargarFactura: {
     display: 'flex',
-    marginTop: '1rem',
+    margin: 'auto',
   },
+  // fin de modicacion
   descripcion: {
     display: 'grid',
     marginTop: '1.5rem',
@@ -209,6 +221,7 @@ export default function PopUpCompras({
       }
     }
     fetchRubros();
+    console.log(rubros)
   }, []);
 
   useEffect(() => {
@@ -385,6 +398,7 @@ export default function PopUpCompras({
         <br />
         <Divider class={$.divider} />
         <div className={$.secondRow}>
+          <div className={$.cargarFactura}>
           <TextField
             label="Fecha"
             onChange={(e) => submitHandle(setFecha, e.target.value)}
@@ -393,6 +407,7 @@ export default function PopUpCompras({
               shrink: true,
             }}
           />
+          </div>
           <div className={$.cargarFactura}>
             <TextField
               label="Monto"
