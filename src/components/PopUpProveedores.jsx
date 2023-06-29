@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { makeStyles, TextField, Button, Divider } from '@material-ui/core';
 import { postProveedor } from '../services/proveedores.js';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import { validateField } from '../utils/validaciones.js';
 
 export default function PopUpProveedores(props) {
   const $ = useStyles();
 
   const [nombre, setNombre] = useState('');
-  const [rubro, setRubro] = useState('');
   const [telefono, setTelefono] = useState('');
   const [mail, setMail] = useState('');
   const [cuit, setCuit] = useState('');
@@ -19,7 +17,6 @@ export default function PopUpProveedores(props) {
   const [errorEmail, setErrorEmail] = useState('');
 
   const canSubmit =
-    rubro &&
     cuit &&
     nombre &&
     telefono &&
@@ -35,7 +32,6 @@ export default function PopUpProveedores(props) {
     const data = {
       nombre: nombre,
       telefono: telefono,
-      rubro: rubro,
       mail: mail,
       cuit: cuit,
     };
@@ -58,22 +54,6 @@ export default function PopUpProveedores(props) {
         <h2>Agregar nuevo proveedor</h2>
         <Divider />
         <div className={$.inputs}>
-          <Autocomplete
-            id="proveedores"
-            options={[
-              'insumos',
-              'bibliografia',
-              'publicaciones',
-              'viaticos',
-              'equipamiento',
-              'tecnico',
-              'administracion',
-            ]}
-            getOptionLabel={(option) => option}
-            renderInput={(params) => <TextField {...params} label="Rubros"/>}
-            onChange={(e, value) => submitHandle(setRubro, value)}
-            size="small"
-          />
           <TextField
             label="Nombre completo"
             className={$.textField}
@@ -141,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    marginTop: '1rem'
+    marginTop: '1rem',
   },
   textField: {
     marginTop: '0.5rem',
