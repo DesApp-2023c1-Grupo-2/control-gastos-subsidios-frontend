@@ -10,21 +10,6 @@ import {
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { getProyectsForAdmin } from '../../services/proyectos';
-<<<<<<< HEAD
-//Julian 16/5
-import { listaProyectosAdmin } from '../../constants/constants';
-=======
-import Collapse from '@material-ui/core/Collapse';
-
-// Collaps imports
-import IconButton from '@material-ui/core/IconButton';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import Box from '@material-ui/core/Box';
-import TableHead from '@material-ui/core/TableHead';
-import Typography from '@material-ui/core/Typography';
-//
->>>>>>> origin/Dev
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -181,35 +166,10 @@ const ProyectsList = () => {
 
   const [proyects, setProyects] = useState([]);
 
-<<<<<<< HEAD
   useEffect(() => {
     async function getProyects() {
       const proyectos = await getProyectsForAdmin();
 
-=======
-  const presupuestoTotal = (proyect) => {
-    let suma = 0;
-    proyect.SubsidiosAsignados.forEach((subsidio) => {
-      suma += subsidio.montoAsignado;
-    });
-    return suma;
-  };
-
-  const presupuestoGastado = (proyect) => {
-    let suma = 0;
-    proyect.SubsidiosAsignados.forEach((subsidio) => {
-      subsidio.Compras.forEach((compra) => {
-        suma += parseInt(compra.monto);
-      });
-    });
-    return parseInt(suma);
-  };
-
-  useEffect(() => {
-    async function getProyects() {
-      const proyectos = await getProyectsForAdmin();
-      console.log(proyectos);
->>>>>>> origin/Dev
       setProyects(proyectos);
     }
     getProyects();
@@ -255,40 +215,18 @@ const ProyectsList = () => {
             </StyledTableCell>
           </StyledTableHead>
           <TableBody>
-<<<<<<< HEAD
-            {listaProyectosAdmin.map((listaProyectosAdmin) => (
-              <StyledTableRow key={listaProyectosAdmin.titulo}>
-                <StyledTableCell scope="row" className={$.tableCellContent}>
-                  {listaProyectosAdmin.titulo}
+            {proyects.map((proyecto) => (
+              <StyledTableRow key={proyecto.id}>
+                <StyledTableCell scope="row" to={'/proyectos'}>
+                  {proyecto.titulo}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {listaProyectosAdmin.convocatoria}
+                  {proyecto.director}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {listaProyectosAdmin.director}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {listaProyectosAdmin.presupuestoTotal}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {listaProyectosAdmin.presupuestoGastado}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {listaProyectosAdmin.presupuestoRemanente}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {listaProyectosAdmin.fechaInicio}
+                  {proyecto.fechaInicio}
                 </StyledTableCell>
               </StyledTableRow>
-=======
-            {proyects.map((row) => (
-              <Row
-                key={row.id}
-                row={row}
-                presupuestoTotal={presupuestoTotal(row)}
-                presupuestoGastado={presupuestoGastado(row)}
-              />
->>>>>>> origin/Dev
             ))}
           </TableBody>
         </Table>
