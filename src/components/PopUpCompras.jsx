@@ -12,12 +12,24 @@ import {
   Select,
   Tooltip,
 } from '@material-ui/core';
-import { postCompra, getGastosPorRubro } from '../services/compras.js';
-import { getPresupuesto, getRubros } from '../services/presupuestos.js';
+import {
+  postCompra,
+  getGastosPorRubro,
+  getTotalxSubsidio,
+} from '../services/compras.js';
+import {
+  getPresupuesto,
+  getRubros,
+  listadetodos,
+} from '../services/presupuestos.js';
 import { validateField, validateMonto } from '../utils/validaciones';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { GetApp, KeyboardArrowDown } from '@material-ui/icons';
-import { postProveedor,getAllProveedores } from '../services/proveedores.js';
+// import { GetApp, KeyboardArrowDown } from '@material-ui/icons';
+import AddIcon from '@material-ui/icons/Add';
+import { postProveedor, getAllProveedores } from '../services/proveedores.js';
+
+// funciones GET de subsidiosAsignados
+import { getSubsidioXProyectoXRubro } from '../services/subsidiosasignados.js';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -58,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '1.5rem',
   },
   multiLineInput: {
-    backgroundColor: '#fafafa',
+    backgroundColor: '#EAEDED',
     borderRadius: '5px',
     width: '90%',
   },
@@ -75,12 +87,22 @@ const useStyles = makeStyles((theme) => ({
       color: '#62B5F6',
     },
   },
+  addIcon: {
+    //marginBlock: 'auto',
+    //margin: '1rem',
+    marginTop: '1.5rem',
+    marginLeft: '0.5rem',
+    '&:hover': {
+      color: '#62B5F6',
+    },
+  },
   buttonList: {
     display: 'block',
   },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
+    marginLeft: 0,
   },
   subrubro: {
     marginTop: '1.25rem',
@@ -121,17 +143,21 @@ export default function PopUpCompras({
   const $ = useStyles();
 
   const [rubro, setRubro] = useState('');
-  const [subrubro, setSubrubro] = useState(null);
+
+  // const [subrubro, setSubrubro] = useState(null);
   const [fecha, setFecha] = useState(null);
-  const [proveedor, setProveedor] = useState('');
+  const [idproveedor, setProveedor] = useState('');
   const [monto, setMonto] = useState(0);
   const [nombre, setNombre] = useState('');
+  const [nroFactura, setNroFactura] = useState(null);
+
   const [disponibleRubro, setDisponibleRubro] = useState(0);
+
   const [newProveedor, setNewProveedor] = useState(null);
   const [proveedores, setProveedores] = useState([]);
   //Errors in fields
   const [errorMonto, setErrorMonto] = useState(false);
-  const [errorSubrubro, setErrorSubrubro] = useState(false);
+  // const [errorSubrubro, setErrorSubrubro] = useState(false);
   const [errorNombreNewProveedor, setErrorNombreNewProveedor] = useState(null);
   const [errorCuitNewProveedor, setErrorCuitNewProveedor] = useState(null);
   const [errorTelefonoNewProveedor, setErrorTelefonoNewProveedor] = useState(
@@ -139,7 +165,7 @@ export default function PopUpCompras({
   );
 
   //New proveedor fields
-  const [newProveedorRubro, setNewProveedorRubro] = useState(null);
+  // const [newProveedorRubro, setNewProveedorRubro] = useState(null);
   const [newProveedorNombre, setNewProveedorNombre] = useState(null);
   const [newProveedorCuit, setNewProveedorCuit] = useState(null);
   const [newProveedorTelefono, setNewProveedorTelefono] = useState(null);
@@ -148,61 +174,87 @@ export default function PopUpCompras({
   const [errorEmailNewProveedor, setErrorEmailNewProveedor] = useState(null);
   //Validate form to send
   const availableMoneyForRubro = disponibleRubro > 0;
+  //const availableMoneyForRubro = true;
+
+  //subsidio: es el subsidioasignado que sale del Proyecto en el cual se esta 
+  //actualmente (idProyecto) y el rubro, que se selecciono (idRubro).
+  const [subsidio, setSubsidio] = useState(null);
+
+
   const canSubmit =
     rubro &&
-    subrubro &&
+    nroFactura &&
     monto &&
     fecha &&
-    proveedor &&
+    idproveedor &&
     availableMoneyForRubro &&
     !errorMonto;
   const canAddProveedor =
-    newProveedorRubro &&
-    newProveedorNombre &&
-    newProveedorCuit &&
-    newProveedorTelefono;
+    //newProveedorRubro &&
+    newProveedorNombre && newProveedorCuit && newProveedorTelefono;
 
   //Consts
-  const rubros = getRubros();
+  //const rubros = getRubros();
+  //Rubros fetch
+  const [rubros, setRubros] = useState([]);
+  useEffect(() => {
+    async function fetchRubros() {
+      try {
+        const rubros = await listadetodos();
+        const rubrosJson = await rubros;
+        setRubros(rubrosJson);
+        console.log(rubrosJson);
+      } catch (error) {
+        console.log('error en el fetch de Rubros : ' + error);
+      }
+    }
+    fetchRubros();
+  }, []);
 
   useEffect(() => {
-    async function getProveedores(){
+    async function getProveedores() {
       const provedoresResponse = await getAllProveedores();
-      
+
       setProveedores(provedoresResponse.data);
     }
     getProveedores();
     const id = sessionStorage.getItem('idProyecto');
     setIdProyecto(id);
-  }, []);
-  
+  }, [newProveedor]);
+
   //UseEffect when changing "rubros"
   useEffect(() => {
     async function fetchGastos() {
-      const gastos = await getGastosPorRubro(rubro, idProyecto);
-      const presupuesto = await getPresupuesto();
-      
-      const dineroDisponible = calcularDineroDisponiblePorRubro(
-        presupuesto,
-        gastos.totalGastado,
-        rubro
-      );
+      //consulta con la API de subsidios, mediante el idProyecto (hardcoderado con 1)
+      // y el id del rubro seleccionado, y devuelve el subsidioAsignado.
+      const subsidioAsignado = await getSubsidioXProyectoXRubro(1, rubro);
 
+      // Con el subsidioAsignado, consulta en la API de compras, todas
+      // las que tengan este idSubsidio
+      const totalComprasSubsidio = await getTotalxSubsidio(subsidioAsignado.id);
+
+      const dineroDisponible = calcularDineroDisponiblePorRubro(
+        subsidioAsignado.montoAsignado,
+        totalComprasSubsidio,
+        JSON.stringify(subsidioAsignado.Rubro.nombre)
+      );
+      setSubsidio(subsidioAsignado);
       setDisponibleRubro(dineroDisponible);
     }
     try {
       fetchGastos();
     } catch (err) {
-      console.log('[PopUpCompras Component] ERROR:' + err.message);
+      console.log('[PopUpCompras Component] ERROR: ' + err.message);
     }
   }, [rubro]);
 
   const calcularDineroDisponiblePorRubro = (
     presupuestoTotal,
     gastosRubro,
-    rubro
+    nombreRubro
   ) => {
-    return rubro ? presupuestoTotal[rubro.toLowerCase()] - gastosRubro : 0;
+
+    return nombreRubro ? parseInt(presupuestoTotal) - parseInt(gastosRubro) : 0;
   };
 
   //POST DATA TO BACKEND
@@ -210,15 +262,17 @@ export default function PopUpCompras({
     state(false);
     const data = {
       fecha: fecha,
-      rubro: rubro,
-      subrubro: subrubro,
-      numeroCompra: 80,
-      proveedor: proveedor,
+      //rubro: rubro,
+      // subrubro: subrubro,
+      //numeroCompra: 80,
+      //proveedor: proveedor,
       monto: monto,
       estado: 'Comprado',
-      factura: 'factura-054',
-      nombre: nombre,
-      idProyecto: idProyecto,
+      factura: nroFactura,
+      nombre: nombre, //esto seria una descripcion
+      //idProyecto: null,
+      idsubsidio: subsidio.id,
+      idproveedor: idproveedor
     };
     const res = await postCompra(data);
     stateNewCompra(true);
@@ -230,7 +284,6 @@ export default function PopUpCompras({
       cuit: newProveedorCuit,
       nombre: newProveedorNombre,
       telefono: newProveedorTelefono,
-      rubro: newProveedorRubro,
       mail: newProveedorEmail,
     };
     const responseBack = await postProveedor(data);
@@ -257,6 +310,7 @@ export default function PopUpCompras({
     setState(value);
   };
 
+  // handlers rubros
   const RubroSelected = () => {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
@@ -291,9 +345,9 @@ export default function PopUpCompras({
             value={rubro}
             onChange={(e) => handleChange(e)}
           >
-            {rubros.map((r, idx) => (
-              <MenuItem value={r} key={idx}>
-                {r}
+            {rubros.map((elementoRubro, idx) => (
+              <MenuItem value={elementoRubro.id} key={idx}>
+                {elementoRubro.nombre}
               </MenuItem>
             ))}
           </Select>
@@ -305,11 +359,11 @@ export default function PopUpCompras({
   return (
     <>
       <div className={$.modal}>
-        <h2>Realizar Pedido de Compra</h2>
-        <Divider />
+        <h2>Ingreso para pedido de compras</h2>
+        <Divider class={$.divider} />
         <div className={$.inputs}>
           <RubroSelected />
-          <TextField
+          {/* <TextField
             label="Subrubro"
             onBlur={(e) =>
               validateField('string', e.target.value, setErrorSubrubro)
@@ -317,13 +371,19 @@ export default function PopUpCompras({
             onChange={(e) => submitHandle(setSubrubro, e.target.value)}
             className={$.subrubro}
             error={errorSubrubro}
-          />
+          /> */}
         </div>
         <Typography>
-          {availableMoneyForRubro ? `Cuentas con $${disponibleRubro} para este rubro` : `No cuentas con dinero disponible para este rubro`}
+          {availableMoneyForRubro
+            ? `Cuentas con $${disponibleRubro} para este rubro`
+            : `No cuentas con dinero disponible para este rubro`}
         </Typography>
         <br />
-        <Divider class={$.divider} />
+        <Divider />
+
+        <br />
+        <Typography variant="h6">Datos de la compra</Typography>
+        <br />
         <div className={$.secondRow}>
           <TextField
             label="Fecha"
@@ -335,21 +395,34 @@ export default function PopUpCompras({
           />
           <div className={$.cargarFactura}>
             <TextField
-              label="Monto"
+              label="Monto factura"
+              style={{ width: 300 }}
               onChange={(e) => submitHandle(setMonto, e.target.value)}
               onBlur={(e) =>
                 validateMonto(disponibleRubro, e.target.value, setErrorMonto)
               }
               error={errorMonto}
             />
-            <GetApp className={$.uploadIcon} />
+            {/* <GetApp className={$.uploadIcon} /> */}
+          </div>
+          <div className={$.cargarFactura}>
+            <TextField
+              label="Nro. factura"
+              style={{ width: 300 }}
+              onChange={(e) => submitHandle(setNroFactura, e.target.value)}
+              error={''}
+            />
           </div>
         </div>
+        <br />
+        <br />
+        <Divider />
+
         <div className={$.descripcion}>
-          <Typography variant="h5">Descripción</Typography>
+          <Typography variant="h6">Descripción</Typography>
           <br />
           <TextField
-            label="La compra cuenta con los siguientes objetos/servicios"
+            label="Enumeracion de items / servicios, comprados"
             multiline
             rows={6}
             className={$.multiLineInput}
@@ -365,22 +438,20 @@ export default function PopUpCompras({
             renderInput={(params) => (
               <TextField {...params} label="Proveedores" />
             )}
-            onChange={(e, value) => submitHandle(setProveedor, value?.nombre)}
+            onChange={(e, value) => submitHandle(setProveedor, value?.id)} // idproveedor para la compra
           />
           <Tooltip title="Agregar proveedor">
-            <KeyboardArrowDown
-              className={$.uploadIcon}
-              onClick={handleAddProveedor}
-            />
+            <AddIcon className={$.addIcon} onClick={handleAddProveedor} />
           </Tooltip>
         </div>
         {/* Form para cargar nuevo proveedor */}
         {newProveedor && (
           <div className={$.proveedorForm}>
-            <span className={$.label}>Nombre completo</span>
+
             <TextField
               className={$.inputForm}
-              placeholder="Ingrese el Nombre completo"
+              label="Nombre: Empresa S.A."
+              style={{ width: 300 }}
               onChange={(e) =>
                 handleNewProveedor(e.target.value, setNewProveedorNombre)
               }
@@ -393,10 +464,11 @@ export default function PopUpCompras({
               }
               error={errorNombreNewProveedor}
             />
-            <span className={$.label}>Teléfono</span>
+
             <TextField
               className={$.inputForm}
-              placeholder="Ingrese el número de teléfono"
+              label="Telefono: 1112345678"
+              style={{ width: 300 }}
               onChange={(e) =>
                 handleNewProveedor(e.target.value, setNewProveedorTelefono)
               }
@@ -409,10 +481,11 @@ export default function PopUpCompras({
               }
               error={errorTelefonoNewProveedor}
             />
-            <span className={$.label}>Cuit</span>
+
             <TextField
               className={$.inputForm}
-              placeholder="Ingrese el CUIT"
+              label="CUIT: 30-12345679-0"
+              style={{ width: 300 }}
               onChange={(e) =>
                 handleNewProveedor(e.target.value, setNewProveedorCuit)
               }
@@ -421,10 +494,11 @@ export default function PopUpCompras({
               }
               error={errorCuitNewProveedor}
             />
-            <span className={$.label}>Email</span>
+
             <TextField
               className={$.inputForm}
-              placeholder="Ingrese el correo"
+              label="E-mail: mail@empresa.com.ar"
+              style={{ width: 300 }}
               onChange={(e) =>
                 handleNewProveedor(e.target.value, setNewProveedorEmail)
               }
@@ -437,6 +511,7 @@ export default function PopUpCompras({
               }
               error={errorEmailNewProveedor}
             />
+            {/* 
             <span className={$.label}>Rubro</span>
             <Autocomplete
               id="rubro"
@@ -450,6 +525,8 @@ export default function PopUpCompras({
                 handleNewProveedor(value, setNewProveedorRubro)
               }
             />
+            */}
+
             <Button onClick={sendDataNewProveedor} disabled={!canAddProveedor}>
               Agregar proveedor
             </Button>

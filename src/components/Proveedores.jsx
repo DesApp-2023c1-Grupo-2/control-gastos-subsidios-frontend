@@ -63,7 +63,7 @@ export const Proveedores = () => {
       }
     }
     fetchProveedores();
-  }, []);
+  }, [open]);
 
   const loadingRendering = () => {
     return <Alert severity="info">Cargando...</Alert>;
@@ -75,9 +75,6 @@ export const Proveedores = () => {
           <Table aria-label="customized table">
             <StyledTableHead>
               <StyledTableCell className={$.textColor}>Nombre</StyledTableCell>
-              <StyledTableCell align="left" className={$.textColor}>
-                Rubro
-              </StyledTableCell>
               <StyledTableCell align="left" className={$.textColor}>
                 Teléfono
               </StyledTableCell>
@@ -93,9 +90,6 @@ export const Proveedores = () => {
                 <StyledTableRow key={proveedores.id}>
                   <StyledTableCell scope="row">
                     {proveedores.nombre}
-                  </StyledTableCell>
-                  <StyledTableCell align="left">
-                    {proveedores.rubro}
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     {proveedores.telefono}

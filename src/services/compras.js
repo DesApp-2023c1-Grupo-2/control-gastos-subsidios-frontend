@@ -20,16 +20,17 @@ export async function getAllCompras() {
 }
 
 export async function getComprasByProyecto(idProyecto) {
-  const endpoint = `${SERVICES_CONFIG.baseUrl}${SERVICES_CONFIG.port}${SERVICES_CONFIG.path}/getComprasByProyect`;
+  const endpoint = `${SERVICES_CONFIG.baseUrl}${SERVICES_CONFIG.port}${SERVICES_CONFIG.path}/getComprasByProyecto/${idProyecto}`;
   const response = await fetch(endpoint, {
-    method: 'POST',
+    //method: 'POST',
+    method: 'GET',
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
     credentials: 'same-origin', // include, *same-origin, omit
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ idProyecto: idProyecto }),
+    //body: JSON.stringify({ idProyecto: idProyecto }),
     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
   });
   return response.json();
@@ -53,6 +54,22 @@ export async function postCompra(body) {
 export async function getGastosPorRubro(rubro, idProyecto) {
   const EXTRA_PATH = '/gastos/findByRubro';
   const endpoint = `${SERVICES_CONFIG.baseUrl}${SERVICES_CONFIG.port}${SERVICES_CONFIG.path}${EXTRA_PATH}?rubro=${rubro}&idProyecto=${idProyecto}`;
+  const response = await fetch(endpoint, {
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    referrerPolicy: 'no-referrer',
+  });
+  return response.json();
+}
+
+export async function getTotalxSubsidio(idSubsidio) {
+  const EXTRA_PATH = '/getTotalxSubsidio/';
+  const endpoint = `${SERVICES_CONFIG.baseUrl}${SERVICES_CONFIG.port}${SERVICES_CONFIG.path}${EXTRA_PATH}${idSubsidio}`;
   const response = await fetch(endpoint, {
     method: 'GET', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin

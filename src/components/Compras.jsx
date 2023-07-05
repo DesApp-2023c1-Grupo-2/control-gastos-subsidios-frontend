@@ -46,11 +46,11 @@ export const Compras = ({ setIdProyecto }) => {
   const $ = useStyles();
 
   //States
-  const [compras, setCompras] = useState(null);
+  const [compras, setCompras] = useState([]); //(null);
   const [open, setOpen] = useState(false);
   const [newCompra, setNewCompra] = useState(true);
   const idProyecto = sessionStorage.getItem('idProyecto'); //TODO: PASAR A REDUX
-  
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -68,8 +68,14 @@ export const Compras = ({ setIdProyecto }) => {
   useEffect(() => {
     async function fetchCompra() {
       try {
-        const compras = await getComprasByProyecto(idProyecto);
-        setCompras(compras);
+        const compras = await getComprasByProyecto(1); // se Hardcodea(idProyecto);
+        setCompras(
+          compras.sort(function (a, b) {
+            var textA = a.fecha;
+            var textB = b.fecha;
+            return (textA > textB) ? -1 : (textA < textB) ? 1 : 0;
+          })
+        );
       } catch (err) {
         console.log('ERROR FETCH API [compras]: ' + err);
       }
@@ -97,7 +103,7 @@ export const Compras = ({ setIdProyecto }) => {
               <StyledTableHead>
                 <StyledTableCell className={$.textColor}>
                   Fecha
-                  </StyledTableCell>
+                </StyledTableCell>
                 <StyledTableCell align="left" className={$.textColor}>
                   Nro Factura
                 </StyledTableCell>
@@ -107,9 +113,7 @@ export const Compras = ({ setIdProyecto }) => {
                 <StyledTableCell align="left" className={$.textColor}>
                   Rubro
                 </StyledTableCell>
-                <StyledTableCell align="left" className={$.textColor}>
-                  Subrubro
-                </StyledTableCell>
+
                 <StyledTableCell align="left" className={$.textColor}>
                   Estado
                 </StyledTableCell>
@@ -127,14 +131,12 @@ export const Compras = ({ setIdProyecto }) => {
                       {compra.factura}
                     </StyledTableCell>
                     <StyledTableCell align="left">
-                      {compra.proveedor}
+                      {compra.Proveedore.nombre}
                     </StyledTableCell>
                     <StyledTableCell align="left">
-                      {compra.rubro}
+                      {compra.SubsidiosAsignado.Rubro.nombre}
                     </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {compra.subrubro}
-                    </StyledTableCell>
+
                     <StyledTableCell align="left">
                       {compra.estado}
                     </StyledTableCell>
@@ -145,7 +147,7 @@ export const Compras = ({ setIdProyecto }) => {
                 ))}
               </TableBody>
               <TableBody>
-                {[0, 1, 2, 3, 4].map((key) => (
+                {[0, 1, 2, 3].map((key) => (
                   <StyledTableCell
                     key={key}
                     style={{ backgroundColor: '#E5E9F0' }}
